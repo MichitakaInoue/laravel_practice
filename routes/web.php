@@ -14,3 +14,14 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+// ルーティングが追加  laravelでの認証 vender/router/routingの中に書かれてるルーティングが読み込まれている
+Auth::routes();
+
+//URIがhomeのとき、コントローラー名@アクションの処理をしなさい　と言う意味
+Route::get('/home', 'HomeController@index')->name('home');
+
+
+
+
