@@ -6,26 +6,24 @@
 
 @extends('layouts.app')  
 
-@php
- Log::debug('view: new(練習登録画面、練習投稿画面(共通)を表示させるためのビューです。');   
-@endphp
-
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
                                             <!-- 翻訳ファイルを元に言語の設定を変えることができる -->
-                <div class="card-header">{{ __('Drill Register') }}</div>
+                <div class="card-header">{{ __('Drill Updater') }}</div>
 
+                {{-- actionにはどのIDを送信させるのか指定させること routeの第２引数で --}}
+                {{-- Route::の{id}に第２引数の値が入ってきてURIが生成される --}}
                 <div class="card-body">
-                    <form method="POST" action="{{ route('drills.create') }}">
+                    <form method="POST" action="{{ route('drills.update', $drill->id) }}">
                         @csrf
                         <div class="form-group row">
                             <label for="title" class="col-md-4 col-form-label text-md-right">{{ __('Title') }}</label>
 
                             <div class="col-md-6">
-                                <input id="title" type="text" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ old('title') }}"  autocomplete="title" autofocus>
+                                <input id="title" type="text" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ $drill->title }}"  autocomplete="title" autofocus>
 
                                 @error('title')
                                     <!-- $messageと書いておくだけで、自動的にlaravelからエラーがあっったら自動的にメッセージを入れてくれる -->
@@ -41,7 +39,7 @@
                             <label for="category_name" class="col-md-4 col-form-label text-md-right">{{ __('Category') }}</label>
 
                             <div class="col-md-6">
-                                <input id="category_name" type="text" class="form-control @error('category_name') is-invalid @enderror" name="category_name" value="{{ old('category_name') }}"  autocomplete="category_name">
+                                <input id="category_name" type="text" class="form-control @error('category_name') is-invalid @enderror" name="category_name" value="{{ $drill->category_name}}"  autocomplete="category_name">
 
                                 @error('category_name')
                                     <span class="invalid-feedback" role="alert">
@@ -89,7 +87,7 @@
                                 <label for="problem{{$i-1}}" class="col-md-4 col-form-label text-md-right">{{ __('Problem').$i }}</label>
 
                                 <div class="col-md-6">
-                                    <input id="problem{{$i-1}}" type="text" class="form-control @error('problem'.($i-1)) is-invalid @enderror" name="problem{{$i-1}}" value="{{old('problem'.($i-1)) }}"  autocomplete="problem{{$i-1}}">
+                                    <input id="problem{{$i-1}}" type="text" class="form-control @error('problem'.($i-1)) is-invalid @enderror" name="problem{{$i-1}}" value="{{$drill['problem'.($i-1)]}}"  autocomplete="problem{{$i-1}}">
                                     @error('problem'.($i-1))
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>

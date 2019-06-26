@@ -84,7 +84,6 @@ return [
             'driver' => 'syslog',
             'level' => 'debug',
         ],
-
         'errorlog' => [
             'driver' => 'errorlog',
             'level' => 'debug',
