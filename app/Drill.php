@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+//これはモデル
 //このクラス名の複数系をテーブル名として、自動的に判別してSQLを作って操作する  Drillsをテーブル名とする
 class Drill extends Model //このModelクラスにDBを操作するメソッドが入っている 
 {

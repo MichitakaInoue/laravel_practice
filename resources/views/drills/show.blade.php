@@ -12,6 +12,12 @@
                         <p>{{$drill->problem0}}</p>
                         <p>{{$drill->problem1}}</p>
                         <p>{{$drill->problem2}}</p>
+                        <div id="app">
+                            {{-- これで.vueファイルを読みこむことができる --}}
+                            {{-- これらpropsを使って、コンポーネントを流し込んでいる --}}
+                            <example-component title="{{__('Practice').'['.$drill->title.']'}}"
+                                :drill="{{$drill}}" category_name="{{$drill->category_name}}"></example-component>  
+                        </div>
                     </div>
                 </div>
             </div>
