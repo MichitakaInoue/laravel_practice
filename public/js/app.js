@@ -1855,9 +1855,12 @@ module.exports = function isBuffer (obj) {
 /*!***************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js& ***!
   \***************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _master_keymap__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../master/keymap */ "./resources/js/master/keymap.js");
 //
 //
 //
@@ -1900,126 +1903,178 @@ module.exports = function isBuffer (obj) {
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-// export　defaultで必要なpropsを算出することができる
-//vueで使うプロパティを定義する
-//動的に変わるようなプロパティはconputedで定義してあげて
-//それぞれmwthodで実行させたいものを定義する
-//@clickでmethodやv-ifでフラグによる表示非表示を使う
-//プロパティを展開させて表示させる場合はtableとか　をv-forで展開
+ //照らし合せのためキーコードマップを作成
+//コンポーネント側ではなんでもかんでも値がきてしまうと困るのでどの値は許可するのか定義しておく
+
+console.log('ExampleComponent読み込めています');
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['title', 'drill', 'category_name'],
+  //親からこのコンポーネントに値を流し込む propsで受け取る値とは
+  data: function data() {
+    return {
+      countDownNum: 3,
+      //カウントダウン用 
+      timeNum: 30,
+      //タイマー
+      missNum: 0,
+      //ミス数
+      wpm: 0,
+      //WPM　タイプの速さ　タイピングスコアによって変えていく
+      isStarted: false,
+      isEnd: false,
+      isCountDown: false,
+      currentWordNum: 0,
+      //現在回答中の文字数目
+      currentProblemNum: 0 //現在の問題番号　この番号が、this.drillのDBのカラムの中にあるproblrm番号と対応している
+
+    };
+  },
+  computed: {
+    //リアルタイムで変更していくので監視するデータ　自動で監視しているので次の問題へ行く
+    problemWords: function problemWords() {
+      //問題文自体
+      return Array.from(this.drill['problem' + this.currentProblemNum]); //this.drillの現在の問題番号　this.drillはpropsのdrill(phpの方からjsに渡してきたデータ)
+      //this.drillの中身についてDBのカラムをキーに取ったデータが入っているのでproblem0 problem1という風に取り出していくことができる
+    },
+    problemKeyCodes: function problemKeyCodes() {
+      //問題の回答キーコードの配列  １文字１文字のキーコードが入っている　問題文が変わるたびに変わっていく
+      if (!Array.from(this.drill['problem' + this.currentProblemNum]).length) {
+        //
+        return null;
+      }
+
+      var problemKeyCodes = []; //重要！！　問題の文字列から１文字１文字のキーコード配列を生成
+
+      console.log('problemKeyCodes文字数:', Array.from(this.drill['problem' + this.currentProblemNum]).length); //その問題文の文字数
+
+      Array.from(this.drill['problem' + this.currentProblemNum]).forEach(function (text) {
+        $.each(_master_keymap__WEBPACK_IMPORTED_MODULE_0__["default"], function (keyText, keyCode) {
+          if (text == keyText) {
+            problemKeyCodes.push(keyCode);
+          }
+        });
+      });
+      console.log(problemKeyCodes); //問題文のキーコード
+
+      return problemKeyCodes; //配列の形にする
+    },
+    totalWordNum: function totalWordNum() {
+      //実際の問題の文字数 　　computedで自動監視しているため、この時点でproblemKeyCodesは可変の値
+      return this.problemKeyCodes.length;
+    },
+    typingScore: function typingScore() {
+      //あなたのスコアで使われる　　
+      return this.wpm * 2 * (1 - this.missNum / (this.wpm * 2)); //正答率を考える
+    }
+  },
+  methods: {
+    //vue.jsで使える関数　監視されない
+    doDrill: function doDrill() {
+      console.log('doDrill: startボタンクリックされました');
+      this.isStarted = true;
+      this.countDown();
+    },
+    countDown: function countDown() {
+      var _this = this;
+
+      console.log('countDowm: ゲームが始まるまでカウントダウンします'); //効果音があればmp3ファイルで
+      //パスはコンパイルされたpublic/js/app.jsから見たパスになるので注意
+      // const countSound = new Auidio(パス)
+      // const startSound = new Auidio(パス
+
+      this.isCountDown = true; // this.soundPlay(countSound)
+
+      var timer = window.setInterval(function () {
+        _this.countDownNum -= 1; //カウントダウンを3.2.1
+
+        if (_this.countDownNum <= 0) {
+          //カウントダウンが0になったら次の処理に移っていく    
+          console.log('countDown: カウントダウン終わりました。isCountDownをfalseにします');
+          _this.isCountDown = false; //フラグをfalseに
+          // this.soundPlay(startSound) //始まったよ、というサウンドを作ること
+
+          window.clearInterval(timer); //1秒ごとの処理を解除する
+
+          _this.countTimer(); //タイピング練習のカウントが始まる
+
+
+          _this.showFirstProblem(); //カウントしつつも問題は表示していくこと
+
+
+          return;
+        } // カウントダウンされるごとにサウンドをつける
+        // countSound.currentTime = 0
+        // countSound.play()
+
+      }, 1000);
+    },
+    showFirstProblem: function showFirstProblem() {
+      var _this2 = this;
+
+      //問題を提示
+      console.log('showFrstProblem: 練習問題を提示させます');
+      console.log('showFirstProblem問題内容:', this.problemWords);
+      console.log('showFirstProblemその問題のキーコード:', this.problemKeyCodes); //効果音
+      // const okSound = new Audio()
+      // const ngSound = new Audio()
+      // const nextSound = new Audio()
+      //キーが打たれる度、入力イベントじに入力キーと回答キーをチェック
+
+      $(window).on('keypress', function (e) {
+        console.log('キー入力がありました');
+        console.log('何のキーがクリックされたか', e.which); //whichの中にキー入力された番号が出てくる
+
+        if (e.which === _this2.problemKeyCodes[_this2.currentWordNum]) {
+          //入力されたキーコードと問題のキーコードがあっているかどうか判別
+          //this.problemKeyCodes(computedの中)
+          console.log('マッチしてます！'); // this.soundPlay(okSound)
+
+          ++_this2.currentWordNum; //打ってる途中で問題に合致している場合、現在何文字目がをインクリメントすること
+
+          ++_this2.wpm; //
+
+          console.log('現在回答の文字数目: ' + _this2.currentWordNum); //全文字正解が終わったら、次の問題へ
+
+          if (_this2.totalWordNum === _this2.currentWordNum) {
+            //正解している なおかつ今の文字数が
+            console.log('全て正解！次の問題へ');
+            ++_this2.currentProblemNum; //ここがインクリメントされることでcomputedでの監視が行われる
+
+            _this2.currentWordNum = 0; // this.soundPlay(nextSound)
+          }
+        } else {
+          //入力された文字があっていない　不正解の場合
+          console.log('不正解です'); // this.soundPlay(ngSound)
+
+          ++_this2.missNum; //ミス数をインクリメント
+
+          console.log('ミスポイント', _this2.missNum);
+        }
+      });
+    },
+    countTimer: function countTimer() {
+      var _this3 = this;
+
+      //30秒からカウントダウンする
+      console.log('countTimer: countTimerが呼ばれました'); // const endSound = new Audio(パス)
+
+      var timer = window.setInterval(function () {
+        _this3.timeNum -= 1;
+
+        if (_this3.timeNum <= 0) {
+          _this3.isEnd = true;
+          window.clearInterval(timer); // endSound.play()
+        }
+      }, 1000);
+    }
+  } // export　defaultで必要なpropsを算出することができる
+  //vueで使うプロパティを定義する
+  //動的に変わるようなプロパティはconputedで定義してあげて
+  //それぞれmwthodで実行させたいものを定義する
+  //@clickでmethodやv-ifでフラグによる表示非表示を使う
+  //プロパティを展開させて表示させる場合はtableとか　をv-forで展開
+
+});
 
 /***/ }),
 
@@ -37330,17 +37385,32 @@ var render = function() {
                 ? [
                     _c("p", [_vm._v(_vm._s(_vm.timeNum))]),
                     _vm._v(" "),
-                    _c("p", { staticClass: "problem-text" }, [
-                      _vm._v('": index < currentWordNum}">' + _vm._s(_vm.word))
-                    ])
+                    _c(
+                      "p",
+                      { staticClass: "problem-text" },
+                      _vm._l(_vm.problemWords, function(word, index) {
+                        return _c(
+                          "span",
+                          {
+                            class: {
+                              "text-primary": index < _vm.currentWordNum
+                            }
+                          },
+                          [_vm._v(_vm._s(word))]
+                        )
+                      }),
+                      0
+                    )
                   ]
                 : _vm._e(),
               _vm._v(" "),
-              [
-                _c("p", [_vm._v("あなたのスコア")]),
-                _vm._v(" "),
-                _c("p", [_vm._v(_vm._s(_vm.typingScore))])
-              ]
+              _vm.isEnd
+                ? [
+                    _c("p", [_vm._v("あなたのスコア")]),
+                    _vm._v(" "),
+                    _c("p", [_vm._v(_vm._s(_vm.typingScore))])
+                  ]
+                : _vm._e()
             ],
             2
           )
@@ -49592,15 +49662,14 @@ if (token) {
 /*!******************************************************!*\
   !*** ./resources/js/components/ExampleComponent.vue ***!
   \******************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ExampleComponent.vue?vue&type=template&id=299e239e& */ "./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&");
 /* harmony import */ var _ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ExampleComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -49630,15 +49699,13 @@ component.options.__file = "resources/js/components/ExampleComponent.vue"
 /*!*******************************************************************************!*\
   !*** ./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js& ***!
   \*******************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./ExampleComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&");
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default.a); 
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
@@ -49657,6 +49724,108 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
+
+/***/ }),
+
+/***/ "./resources/js/master/keymap.js":
+/*!***************************************!*\
+  !*** ./resources/js/master/keymap.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  "0": 48,
+  "1": 49,
+  "2": 50,
+  "3": 51,
+  "4": 52,
+  "5": 53,
+  "6": 54,
+  "7": 55,
+  "8": 56,
+  "9": 57,
+  "A": 65,
+  "B": 66,
+  "C": 67,
+  "D": 68,
+  "E": 69,
+  "F": 70,
+  "G": 71,
+  "H": 72,
+  "I": 73,
+  "J": 74,
+  "K": 75,
+  "L": 76,
+  "M": 77,
+  "N": 78,
+  "O": 79,
+  "P": 80,
+  "Q": 81,
+  "R": 82,
+  "S": 83,
+  "T": 84,
+  "U": 85,
+  "V": 86,
+  "W": 87,
+  "X": 88,
+  "Y": 89,
+  "Z": 90,
+  "a": 97,
+  "b": 98,
+  "c": 99,
+  "d": 100,
+  "e": 101,
+  "f": 102,
+  "g": 103,
+  "h": 104,
+  "i": 105,
+  "j": 106,
+  "k": 107,
+  "l": 108,
+  "m": 109,
+  "n": 110,
+  "o": 111,
+  "p": 112,
+  "q": 113,
+  "r": 114,
+  "s": 115,
+  "t": 116,
+  "u": 117,
+  "v": 118,
+  "w": 119,
+  "x": 120,
+  "y": 121,
+  "z": 122,
+  "@": 64,
+  "?": 63,
+  ".": 46,
+  ",": 44,
+  "$": 36,
+  "&": 38,
+  "#": 35,
+  "!": 33,
+  "'": 39,
+  "\"": 34,
+  ":": 58,
+  ";": 59,
+  "<": 60,
+  ">": 62,
+  "/": 47,
+  "{": 123,
+  "}": 125,
+  "[": 91,
+  "]": 93,
+  "=": 61,
+  "-": 45,
+  "(": 40,
+  ")": 41,
+  "\\": 91,
+  "+": 43,
+  "_": 95
+});
 
 /***/ }),
 
