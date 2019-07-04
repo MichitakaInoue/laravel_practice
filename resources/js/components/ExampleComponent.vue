@@ -73,20 +73,37 @@
             //this.drillの中身についてDBのカラムをキーに取ったデータが入っているのでproblem0 problem1という風に取り出していくことができる
           },
           problemKeyCodes: function(){  //問題の回答キーコードの配列  １文字１文字のキーコードが入っている　問題文が変わるたびに変わっていく
-                if(!Array.from(this.drill['problem' + this.currentProblemNum]).length){//
+                console.log('problemKeyCodes(computed): 問題文のキーコードの配列を作成します')
+                console.log('problemKeyCodes(computed): このときの問題文の内容', (this.drill['problem' + this.currentProblemNum]))
+            
+
+                if((this.drill['problem' + this.currentProblemNum]) !== null){
+                    console.log('problemKeyCodes(computed): nullではありません')
+
+                    let problemKeyCodes = []//重要！！　問題の文字列から１文字１文字のキーコード配列を生成 配列を用意
+                    Array.from(this.drill['problem' + this.currentProblemNum]).forEach((text) => {
+                        $.each(keyCodeMap, (keyText, keyCode) => {
+                            if(text == keyText){
+                                problemKeyCodes.push(keyCode);
+                            }
+                        })
+                    })
+                    console.log(problemKeyCodes)//問題文のキーコード
+                    return problemKeyCodes  //配列の形にする
+
+                }else{//this.drill['problem' + this.currentProblemNum]) == nullの時を想定
+                    console.log('problemKeyCodes(computed): nullです') 
+                    return;
+                }
+
+                if(!(Array.from(this.drill['problem' + this.currentProblemNum]).length)){//
                     return null
                 }
-                let problemKeyCodes = []//重要！！　問題の文字列から１文字１文字のキーコード配列を生成
-                console.log('problemKeyCodes文字数:', Array.from(this.drill['problem' + this.currentProblemNum]).length)//その問題文の文字数
-                Array.from(this.drill['problem' + this.currentProblemNum]).forEach((text) => {
-                    $.each(keyCodeMap, (keyText, keyCode) => {
-                        if(text == keyText){
-                            problemKeyCodes.push(keyCode);
-                        }
-                    })
-                })
-                console.log(problemKeyCodes)//問題文のキーコード
-                return problemKeyCodes  //配列の形にする
+
+                console.log('problemKeyCodes(computed): 文字数:', Array.from(this.drill['problem' + this.currentProblemNum]).length)//その問題文の文字数
+                console.log('problemKeyCodes(computed): 中身は何か', !(Array.from(this.drill['problem' + this.currentProblemNum]).length))//true false
+                console.log('problemKeyCodes(computed): 配列へ置換', Array.from(this.drill['problem' + this.currentProblemNum]).length)//配列のlength
+
           },
           totalWordNum: function(){ //実際の問題の文字数 　　computedで自動監視しているため、この時点でproblemKeyCodesは可変の値
                 return this.problemKeyCodes.length　　
@@ -135,50 +152,48 @@
             console.log('showFrstProblem: 練習問題を提示させます')
             console.log('showFrstProblem: 全ての問題', this.drill)
             console.log('showFirstProblem問題内容:', this.problemWords)
-            console.log('showFirstProblemその問題のキーコード:', this.problemKeyCodes)
             //効果音
             // const okSound = new Audio()
             // const ngSound = new Audio()
             // const nextSound = new Audio()
 
-            //キーが打たれる度、入力イベントじに入力キーと回答キーをチェック
-            $(window).on('keypress', e => {  
-                console.log('キー入力がありました')
-                console.log('何のキーがクリックされたか',e.which) //whichの中にキー入力された番号が出てくる
-                if(e.which === this.problemKeyCodes[this.currentWordNum]){ //入力されたキーコードと問題のキーコードがあっているかどうか判別
-                    //this.problemKeyCodes(computedの中)
-                console.log('マッチしてます！')
-                // this.soundPlay(okSound)
-                ++this.currentWordNum//打ってる途中で問題に合致している場合、現在何文字目がをインクリメントすること
-                ++this.wpm　//
-                console.log('トータルの文字数:' + this.totalWordNum)
-                console.log('今の文字数目: ' + this.currentWordNum)
+           
+            $(window).on('keypress', e => {//入力があった毎に
+                console.log('showFirstProblem: キー入力がありました')
+                console.log('showFirstProblem: 何のキーがクリックされたか',e.which) //whichの中にキー入力された番号が出てくる
+                console.log('showFirstProblem: 一番初めのキーコード',this.problemKeyCodes)
+                console.log('showFirstProblem: キーコードきちんと存在するのか判断します')
+
+                if(typeof this.problemKeyCodes === 'undefined'){//最終問題の場合問題文はないのでキーコードはundefineがある
+                    console.log('showFirstProblem: アンディファインド')
+                }else if(this.problemKeyCodes instanceof Object){//問題が存在する場合キーコードが存在するので(オブジェクトの形式)
+                    console.log('showFirstProblem: ディファイン。this.problemKeyCodeはオブジェクトです')
+                }          
+
+                if(this.problemKeyCodes instanceof Object &&  e.which === this.problemKeyCodes[this.currentWordNum]){ //入力されたキーコードと問題のキーコードがあっているかどうか判別
+                    console.log('showFirstProblem: マッチしてます！')
+                    // this.soundPlay(okSound)
+                    ++this.currentWordNum//打ってる途中で問題に合致している場合、現在何文字目がをインクリメントすること
+                    ++this.wpm　//
+                    console.log('showFirstProblem: トータルの文字数:' + this.totalWordNum)
+                    console.log('showFirstProblem: 今の文字数目: ' + this.currentWordNum)
                 
 
-                //全文字正解が終わったら、次の問題へ
-                if(this.totalWordNum === this.currentWordNum){ //正解している なおかつ今の文字数が
-                    console.log('今(インクリメント前)の問題内容',this.drill['problem' + this.currentProblemNum])
-                    console.log('今(インクリメント前)の問題番号', this.currentProblemNum)
-                    console.log('全て正解！次の問題へ')
-                    console.log('インクリメントします。')
+                    //全文字正解が終わったら、次の問題へ
+                    if(this.totalWordNum === this.currentWordNum){ //正解している なおかつ今の文字数が
+                        console.log('showFirstProblem: (インクリメント前)問題内容',this.drill['problem' + this.currentProblemNum])
+                        console.log('showFirstProblem: (インクリメント前)問題番号', this.currentProblemNum)
+                        console.log('showFirstProblem: (インクリメント前)問題のキーコード', this.problemKeyCodes)
+                        console.log('showFirstProblem: 全て正解！次の問題へ')
+                        console.log('showFirstProblem: インクリメントします。')
 
-                    ++this.currentProblemNum//ここがインクリメントされることでcomputedでの監視が行われる
-                    this.currentWordNum = 0
-
-                    this.endProblem();
-                    // console.log('今(インクリメント後)の問題番号', this.currentProblemNum)
-                    // console.log('インクリメント後の問題はあるのか。',this.drill['problem']+ this.currentProblemNum)
-
-
-                    // if((this.drill['problem']+ this.currentProblemNum) == null){//次の問題は 存在するのか
-                    //     console.log('これ以上問題はありません。終わります。')
-                    //     this.isEnd = true
-                    // }else if(this.drill['problem']+ this.currentProblemNum){
-                    //     console.log('次の問題です')
-                    // }
-                    // this.soundPlay(nextSound)
-                }
-              }else{//入力された文字があっていない　不正解の場合
+                        ++this.currentProblemNum//ここがインクリメントされることでcomputedでの監視が行われる
+                        this.currentWordNum = 0
+                        this.endProblem();
+                        
+                    }
+            
+              }else if(this.problemKeyCodes instanceof Object){//入力された文字があっていない　不正解の場合 undefinedの場合(最終問題を終了した場合)は
                 console.log('入力された文字がマッチしていません。不正解です')
                 // this.soundPlay(ngSound)
                 ++this.missNum //ミス数をインクリメント
@@ -187,14 +202,25 @@
             })
         },
         endProblem: function(){
-            console.log('今(インクリメント後)の問題番号', this.currentProblemNum)
-            console.log('インクリメント後の問題はあるのか。',this.drill['problem'+ this.currentProblemNum])//表示されない
+            console.log('endProblem: 今(インクリメント後)の問題番号', this.currentProblemNum)
+            console.log('endProblem: インクリメント後の問題はあるかどうか。',this.drill['problem'+ this.currentProblemNum])
+            //ここでcomputedへ移動
+            //次の問題がなければここでnull　
+            //しかしここでnullなためcomputedでのproblemKeyCodeが生成できない　nullをobjectに変換できません、とある
 
-            if((this.drill['problem'+ this.currentProblemNum]) == null){//次の問題は 存在するのか
-               console.log('これ以上問題はありません。終わります。')
-               this.isEnd = true
-            }else if(this.drill['problem'+ this.currentProblemNum]){
-               console.log('次の問題です')
+            console.log('endProblem: 今(インクリメント後)の問題のキーコード', this.problemKeyCodes)//次の問題がないときここで処理が止まる
+
+            if(this.drill['problem'+ this.currentProblemNum]){
+                console.log('endProblem: インクリメント後の問題の文字数', (this.drill['problem' + this.currentProblemNum]).length)
+                console.log('endProblem: 次の問題です')
+            }else if (this.drill['problem'+ this.currentProblemNum] == null){
+                console.log('endProblem: これ以上問題はありません。終わります') 
+                //ここで、これ以上問題があなかったとき、app.js:2041 Uncaught TypeError: Cannot read property '0' of undefined
+                //行を見てみると、this.currentWordNumの0番目がundefinedということ
+                console.log('endProblem: エラー内容', this.currentWordNum[0])//undifined
+           
+                this.isEnd = true
+                return false ;
             }
         },
         countTimer: function(){ //30秒からカウントダウンする
