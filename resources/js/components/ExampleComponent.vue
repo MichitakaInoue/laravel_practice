@@ -46,6 +46,10 @@
   console.log('ExampleComponent読み込めています')
   export default{
       props: ['title', 'drill', 'category_name'], //親からこのコンポーネントに値を流し込む propsで受け取る値とは
+
+
+
+
       data: function(){
           return{
               countDownNum: 3, //カウントダウン用 
@@ -59,6 +63,10 @@
               currentProblemNum: 0, //現在の問題番号　この番号が、this.drillのDBのカラムの中にあるproblrm番号と対応している
           }
       },
+
+
+
+
       computed: { //リアルタイムで変更していくので監視するデータ　自動で監視しているので次の問題へ行く
         　problemWords: function(){//問題文自体
             return Array.from(this.drill['problem' + this.currentProblemNum])//this.drillの現在の問題番号　this.drillはpropsのdrill(phpの方からjsに渡してきたデータ)
@@ -87,6 +95,10 @@
               return (this.wpm  * 2) * (1 - this.missNum / (this.wpm * 2)) //正答率を考える
           }
       },
+
+
+
+
       methods: { //vue.jsで使える関数　監視されない
         doDrill: function(){
             console.log('doDrill: startボタンクリックされました')
@@ -121,6 +133,7 @@
         },
         showFirstProblem: function(){ //問題を提示
             console.log('showFrstProblem: 練習問題を提示させます')
+            console.log('showFrstProblem: 全ての問題', this.drill)
             console.log('showFirstProblem問題内容:', this.problemWords)
             console.log('showFirstProblemその問題のキーコード:', this.problemKeyCodes)
             //効果音
@@ -138,22 +151,51 @@
                 // this.soundPlay(okSound)
                 ++this.currentWordNum//打ってる途中で問題に合致している場合、現在何文字目がをインクリメントすること
                 ++this.wpm　//
-                console.log('現在回答の文字数目: ' + this.currentWordNum)
+                console.log('トータルの文字数:' + this.totalWordNum)
+                console.log('今の文字数目: ' + this.currentWordNum)
+                
 
                 //全文字正解が終わったら、次の問題へ
                 if(this.totalWordNum === this.currentWordNum){ //正解している なおかつ今の文字数が
+                    console.log('今(インクリメント前)の問題内容',this.drill['problem' + this.currentProblemNum])
+                    console.log('今(インクリメント前)の問題番号', this.currentProblemNum)
                     console.log('全て正解！次の問題へ')
+                    console.log('インクリメントします。')
+
                     ++this.currentProblemNum//ここがインクリメントされることでcomputedでの監視が行われる
                     this.currentWordNum = 0
+
+                    this.endProblem();
+                    // console.log('今(インクリメント後)の問題番号', this.currentProblemNum)
+                    // console.log('インクリメント後の問題はあるのか。',this.drill['problem']+ this.currentProblemNum)
+
+
+                    // if((this.drill['problem']+ this.currentProblemNum) == null){//次の問題は 存在するのか
+                    //     console.log('これ以上問題はありません。終わります。')
+                    //     this.isEnd = true
+                    // }else if(this.drill['problem']+ this.currentProblemNum){
+                    //     console.log('次の問題です')
+                    // }
                     // this.soundPlay(nextSound)
                 }
               }else{//入力された文字があっていない　不正解の場合
-                console.log('不正解です')
+                console.log('入力された文字がマッチしていません。不正解です')
                 // this.soundPlay(ngSound)
                 ++this.missNum //ミス数をインクリメント
                 console.log('ミスポイント', this.missNum)
               }
             })
+        },
+        endProblem: function(){
+            console.log('今(インクリメント後)の問題番号', this.currentProblemNum)
+            console.log('インクリメント後の問題はあるのか。',this.drill['problem'+ this.currentProblemNum])//表示されない
+
+            if((this.drill['problem'+ this.currentProblemNum]) == null){//次の問題は 存在するのか
+               console.log('これ以上問題はありません。終わります。')
+               this.isEnd = true
+            }else if(this.drill['problem'+ this.currentProblemNum]){
+               console.log('次の問題です')
+            }
         },
         countTimer: function(){ //30秒からカウントダウンする
             console.log('countTimer: countTimerが呼ばれました')

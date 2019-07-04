@@ -2013,6 +2013,7 @@ console.log('ExampleComponent読み込めています');
 
       //問題を提示
       console.log('showFrstProblem: 練習問題を提示させます');
+      console.log('showFrstProblem: 全ての問題', this.drill);
       console.log('showFirstProblem問題内容:', this.problemWords);
       console.log('showFirstProblemその問題のキーコード:', this.problemKeyCodes); //効果音
       // const okSound = new Audio()
@@ -2033,24 +2034,51 @@ console.log('ExampleComponent読み込めています');
 
           ++_this2.wpm; //
 
-          console.log('現在回答の文字数目: ' + _this2.currentWordNum); //全文字正解が終わったら、次の問題へ
+          console.log('トータルの文字数:' + _this2.totalWordNum);
+          console.log('今の文字数目: ' + _this2.currentWordNum); //全文字正解が終わったら、次の問題へ
 
           if (_this2.totalWordNum === _this2.currentWordNum) {
             //正解している なおかつ今の文字数が
+            console.log('今(インクリメント前)の問題内容', _this2.drill['problem' + _this2.currentProblemNum]);
+            console.log('今(インクリメント前)の問題番号', _this2.currentProblemNum);
             console.log('全て正解！次の問題へ');
+            console.log('インクリメントします。');
             ++_this2.currentProblemNum; //ここがインクリメントされることでcomputedでの監視が行われる
 
-            _this2.currentWordNum = 0; // this.soundPlay(nextSound)
+            _this2.currentWordNum = 0;
+
+            _this2.endProblem(); // console.log('今(インクリメント後)の問題番号', this.currentProblemNum)
+            // console.log('インクリメント後の問題はあるのか。',this.drill['problem']+ this.currentProblemNum)
+            // if((this.drill['problem']+ this.currentProblemNum) == null){//次の問題は 存在するのか
+            //     console.log('これ以上問題はありません。終わります。')
+            //     this.isEnd = true
+            // }else if(this.drill['problem']+ this.currentProblemNum){
+            //     console.log('次の問題です')
+            // }
+            // this.soundPlay(nextSound)
+
           }
         } else {
           //入力された文字があっていない　不正解の場合
-          console.log('不正解です'); // this.soundPlay(ngSound)
+          console.log('入力された文字がマッチしていません。不正解です'); // this.soundPlay(ngSound)
 
           ++_this2.missNum; //ミス数をインクリメント
 
           console.log('ミスポイント', _this2.missNum);
         }
       });
+    },
+    endProblem: function endProblem() {
+      console.log('今(インクリメント後)の問題番号', this.currentProblemNum);
+      console.log('インクリメント後の問題はあるのか。', this.drill['problem' + this.currentProblemNum]); //表示されない
+
+      if (this.drill['problem' + this.currentProblemNum] == null) {
+        //次の問題は 存在するのか
+        console.log('これ以上問題はありません。終わります。');
+        this.isEnd = true;
+      } else if (this.drill['problem' + this.currentProblemNum]) {
+        console.log('次の問題です');
+      }
     },
     countTimer: function countTimer() {
       var _this3 = this;
