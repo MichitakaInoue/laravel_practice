@@ -1930,11 +1930,11 @@ console.log('ExampleComponent読み込めています');
     };
   },
   computed: {
-    //リアルタイムで変更していくので監視するデータ　自動で監視しているので次の問題へ行く
+    //リアルタイムで変更していくので監視するデータ　
     problemWords: function problemWords() {
       //問題文自体
       return Array.from(this.drill['problem' + this.currentProblemNum]); //this.drillの現在の問題番号　this.drillはpropsのdrill(phpの方からjsに渡してきたデータ)
-      //this.drillの中身についてDBのカラムをキーに取ったデータが入っているのでproblem0 problem1という風に取り出していくことができる
+      //this.drillの中身についてDBのカラムをキーに取ったデータが入っているのでproblem0 problem1という風に取り出していく
     },
     problemKeyCodes: function problemKeyCodes() {
       //問題の回答キーコードの配列  １文字１文字のキーコードが入っている　問題文が変わるたびに変わっていく
@@ -1943,6 +1943,8 @@ console.log('ExampleComponent読み込めています');
 
       if (this.drill['problem' + this.currentProblemNum] !== null) {
         console.log('problemKeyCodes(computed): nullではありません');
+        console.log('problemKeyCodes(computed): 文字数:', Array.from(this.drill['problem' + this.currentProblemNum]).length); //その問題文の文字数
+
         var problemKeyCodes = []; //重要！！　問題の文字列から１文字１文字のキーコード配列を生成 配列を用意
 
         Array.from(this.drill['problem' + this.currentProblemNum]).forEach(function (text) {
@@ -1965,24 +1967,17 @@ console.log('ExampleComponent読み込めています');
         //
         return null;
       }
-
-      console.log('problemKeyCodes(computed): 文字数:', Array.from(this.drill['problem' + this.currentProblemNum]).length); //その問題文の文字数
-
-      console.log('problemKeyCodes(computed): 中身は何か', !Array.from(this.drill['problem' + this.currentProblemNum]).length); //true false
-
-      console.log('problemKeyCodes(computed): 配列へ置換', Array.from(this.drill['problem' + this.currentProblemNum]).length); //配列のlength
     },
     totalWordNum: function totalWordNum() {
       //実際の問題の文字数 　　computedで自動監視しているため、この時点でproblemKeyCodesは可変の値
       return this.problemKeyCodes.length;
     },
     typingScore: function typingScore() {
-      //あなたのスコアで使われる　　
+      //あなたのスコア　
       return this.wpm * 2 * (1 - this.missNum / (this.wpm * 2)); //正答率を考える
     }
   },
   methods: {
-    //vue.jsで使える関数　監視されない
     doDrill: function doDrill() {
       console.log('doDrill: startボタンクリックされました');
       this.isStarted = true;
@@ -2085,21 +2080,14 @@ console.log('ExampleComponent読み込めています');
     },
     endProblem: function endProblem() {
       console.log('endProblem: 今(インクリメント後)の問題番号', this.currentProblemNum);
-      console.log('endProblem: インクリメント後の問題はあるかどうか。', this.drill['problem' + this.currentProblemNum]); //ここでcomputedへ移動
-      //次の問題がなければここでnull　
-      //しかしここでnullなためcomputedでのproblemKeyCodeが生成できない　nullをobjectに変換できません、とある
-
-      console.log('endProblem: 今(インクリメント後)の問題のキーコード', this.problemKeyCodes); //次の問題がないときここで処理が止まる
+      console.log('endProblem: インクリメント後の問題はあるかどうか。', this.drill['problem' + this.currentProblemNum]);
+      console.log('endProblem: 今(インクリメント後)の問題のキーコード', this.problemKeyCodes);
 
       if (this.drill['problem' + this.currentProblemNum]) {
         console.log('endProblem: インクリメント後の問題の文字数', this.drill['problem' + this.currentProblemNum].length);
         console.log('endProblem: 次の問題です');
       } else if (this.drill['problem' + this.currentProblemNum] == null) {
-        console.log('endProblem: これ以上問題はありません。終わります'); //ここで、これ以上問題があなかったとき、app.js:2041 Uncaught TypeError: Cannot read property '0' of undefined
-        //行を見てみると、this.currentWordNumの0番目がundefinedということ
-
-        console.log('endProblem: エラー内容', this.currentWordNum[0]); //undifined
-
+        console.log('endProblem: これ以上問題はありません。終わります');
         this.isEnd = true;
         return false;
       }
