@@ -26,4 +26,12 @@ class Drill extends Model //このModelクラスにDBを操作するメソッド
 
     //ここは変更されたくないもの テーブルなので運用していく中で考える
     // protected $gurded = ['id'];
+
+
+    //リレーション
+    //drill(drillsテーブル)から見たuserとの関係性
+    //各dirllは、userに属している(belong)
+    public function user(){
+        return $this->belongsTo('App\User');
+    }
 }

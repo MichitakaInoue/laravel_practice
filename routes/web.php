@@ -1,5 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -36,7 +38,7 @@ Route::post('/drills', 'DrillsController@create')->name('drills.create');
 //
 Route::get('/drills', 'DrillsController@index')->name('drills');
 
-//各練習表示のルーティグ drillsにgetに来た時indexアクションに振り分ける
+//各練習表示のルーティグ drillsにgetに来た時editアクションに振り分ける
 Route::get('/drills/{id}/edit', 'DrillsController@edit')->name('drills.edit');
 
 
@@ -53,6 +55,11 @@ Route::post('/drills/{id}/delete', 'DrillsController@destroy')->name('drills.del
 Route::get('/drills/{id}', 'DrillsController@show')->name('drills.show');
 
 
+//mypage(リレーション) 　mypageアクションに振り分ける
+//middlewareを設定したのでactionの実行前の処理が走る
+//注意！ログインしているかどうかはauthというmiddlewareが元から用意されていたので->middleware('auth')でもいい
+Route::get('/mypage', 'DrillsController@mypage')->name('drills.mypage')->middleware('check');
+
 
 // ルーティングが追加  laravelでの認証 vender/router/routingの中に書かれてるルーティングが読み込まれている
 Auth::routes();
@@ -60,6 +67,7 @@ Auth::routes();
 
 //URIがhomeのとき、コントローラー名@アクションの処理をしなさい　と言う意味
 Route::get('/home', 'HomeController@index')->name('home');
+
 
 
 
