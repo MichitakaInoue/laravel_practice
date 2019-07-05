@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Drill;  //名前空間を指定する
 use Log;
+use Illuminate\Support\Facades\Auth;
+
+
+
 
 
 
@@ -16,11 +20,24 @@ class DrillsController extends Controller
     {   
         Log::debug('Controller(Drills): 登録した練習表示用アクション。DBから値を取ってきます。');
         $drills = Drill::all(); //drillsテーブルの全レコードを表示する
-        // Log::debug('$drillsの中身(取得した全部のデータ): '.print_r($drills, true));
+    
         return view('drills.index', ['drills' => $drills]); //viewにそれを渡す　indexテンプレート(一覧表示用のビュー) 
         //指定したビューに対して値を指定するには第2にで配列の形式で '変数名‘=>'指定したい変数'　で 第１の名前をビュー側で変数名として使用することができる
         //compact('変数名')でも同じで便利
     }
+
+
+
+
+    public function mypage(){
+        //いまログインしているユーザーの情報の取得 Auth::user() Authファサード これでUserモデルで定義したメソッドが使えるようになるs
+        //->drills()でその中にひもづく練習の情報を取得することができる drills()はUserモデルで張ったリレーションのメソッドのこと
+        //->getで取得
+        //compactで
+        $drills = Auth::user()->drills()->get();
+        return view('drills.mypage', compact('drills'));
+    }
+
 
 
     //練習登録画面を表示するnewアクション
@@ -31,6 +48,8 @@ class DrillsController extends Controller
         Log::debug('Controller(Drills): 練習投稿画面(TOP)表示用アクション。画面を表示させます。 ');
         return view('drills.new'); //viewの中のdrillsに対応(newというテンプレート) に返している
     }
+
+
 
     public function create(Request $request)
     { //requiredは必須項目 |で区切ること  
@@ -60,7 +79,7 @@ class DrillsController extends Controller
 
 
         //1つ１つ入れるか
-        // $drill->title = $request->title;
+        // $drill->title = $request->title; プロパティを指定して詰める
         // $drill->category_name = $request->category_name;
         // $drill->save();
 
@@ -80,11 +99,16 @@ class DrillsController extends Controller
         //$fillableで指定されていないものは更新されない
 
 
-
+        //マイページを表示させていくまで。データ全てを登録
         //ここでSQLのエラーがあった場合には  try catchを自動的にやってくれる
         //エラーメッセージを個別に表示させる処理も書くことができる
-        $drill->fill($request->all())->save();
+        // $drill->fill($request->all())->save();
 
+
+        //マイページを表示させるには、データを
+        //そのログインしているユーザのdrillsをsaveする
+        //save()の引数にmodelのインスタンスを渡す。そのmodelのインスタンスには更新(保存)させる情報が全部入っていないといけない
+        Auth::user()->drills()->save($drill->fill($request->all()));
 
 
 
@@ -125,10 +149,18 @@ class DrillsController extends Controller
             return redirect('/drills/new')->with('flash_message', __('Invalid operation was performed.'));
         }
 
-        $drill = Drill::find($id); //modelのデータからidを取ってきて$drillの中に格納
+        // $drill = Drill::find($id); //modelのデータからidを取ってきて$drillの中に格納。しかしこれでは他のユーザーが勝手に自分の問題を編集してしまう。
+
+        //そのユーザーのdrills()を取得　Auth::user()でリレーションのdrillsメソッドが入っている。
+        //そのユーザーのid($id)がなければ、nullで入ってくるということ
+        $drill = Auth::user()->drills()->find($id);
+
+
         //取ってきたdrillをビュー側に格納 
         return view('drills.edit', ['drill' => $drill]);
     }
+
+
 
 
     //更新アクション  パラメータが入ってくるので
@@ -146,18 +178,29 @@ class DrillsController extends Controller
     }
 
 
+
+
     //削除アクション
     public function destroy($id){
         Log::debug('DrillController: 練習削除アクション。 練習を削除します'); 
         if(!ctype_digit($id)){
             return redirect('/drills/new')->with('flash_message', __('Invalid operation was performed'));
         }
-        //削除するSQLを自動で作ってくれる
-        Drill::find($id)->delete();
-        //リファクタ
+
+
         // $drill = Drill::find($id);
         // $drill->delete();
-        return redirect('/drills')->with('flash_message', __('Deleted.'));
+
+        //これをリファクタするとこうなる
+        //削除するSQLを自動で作ってくれる
+        // Drill::find($id)->delete();
+
+        //自分の問題しか削除できないようにする　他のユーザーは削除できない
+        $drill = Auth::user()->drills()->find($id)->delete();
+        
+        if($drill === null){//$idがなくnullの場合(他人が削除させようとしたとき)は削除させない
+            return redirect('/drills')->with('flash_message', __('Deleted.'));
+        }
     }
 }
 

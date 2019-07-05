@@ -36,4 +36,13 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    //リレーション
+    public function drills(){//基本的にメソッド名紐付けたいモデルの複数系にすること drillsテーブルからも複数レコードをとってくる
+        //なにをやっているか 
+        //Userモデルに対してdrillというモデルがひもづく、ということを定義してあげる
+        //デフォルトのhasManyというメソッドを作ってあげる引数にAppからの名前空間
+        //1対多の関係をuser視点から見た場合の考え。userはたくさんのdrill(つまりdrillsを持っているということ)
+        return  $this->hasMany('App\Drill');
+    }
 }
