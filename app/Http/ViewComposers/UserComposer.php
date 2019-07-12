@@ -2,7 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\Contacts\Auth\Guard;
+use Illuminate\Contracts\Auth\Guard;
 
  class UserComposer{
     protected $auth; //このクラスの中でしか使わないプロパティ

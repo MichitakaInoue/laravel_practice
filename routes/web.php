@@ -18,7 +18,7 @@ Route::get('/', function () {
     return view('child');
 });
 
-Log::debug('Routing: ルーティング呼ばれました');  //ルーティングは一度に全部呼ばれるっぽい
+Log::debug('Routing: ルーティング呼ばれました');  //ルーティングは一度に全部呼ばれる
 
 //->nameでルーティングに対して名前がつけられ、viewのroute()の値(ヘルパーアクション)　便利関数　が引数に対応
  //Route()をviewに設定(ヘルパーアクション)することで　自動的にそのrouteのURLを生成してくれる
@@ -33,9 +33,9 @@ Route::get('/drills/new', 'DrillsController@new')->name('drills.new');
 //URI drillsのDrillsControllerのcreateアクションを呼ぶ 
 Route::post('/drills', 'DrillsController@create')->name('drills.create');
 
-//練習登録一覧のルーティング
+
+//練習登録一覧のルーティグ 画面を表示しているだけ
 //drillsに対してgetできたとき、indexアクションに振り分ける
-//
 Route::get('/drills', 'DrillsController@index')->name('drills');
 
 //各練習表示のルーティグ drillsにgetに来た時editアクションに振り分ける

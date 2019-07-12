@@ -4,7 +4,7 @@
 
 <!-- old'nameの値'でエラーがあっても入力の値を保持-->
 
-@extends('layouts.app')  
+@extends('layouts.app') 
 
 @php
  Log::debug('view: new(練習登録画面、練習投稿画面(共通)を表示させるためのビューです。');   

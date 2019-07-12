@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 
 
+Log::debug('DrillsController: Drillsコントローラー呼ばれました');
 
 
 class DrillsController extends Controller
@@ -28,7 +29,7 @@ class DrillsController extends Controller
 
 
 
-
+   //マイページ専用アクション
     public function mypage(){
         //いまログインしているユーザーの情報の取得 Auth::user() Authファサード これでUserモデルで定義したメソッドが使えるようになるs
         //->drills()でその中にひもづく練習の情報を取得することができる drills()はUserモデルで張ったリレーションのメソッドのこと

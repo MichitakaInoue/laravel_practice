@@ -1,4 +1,3 @@
-
 @extends('layouts.welcome') 
 
 @section('title', 'マイページ')
